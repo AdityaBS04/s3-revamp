@@ -1,0 +1,25 @@
+# The two "warehouses" (storage servers) we test. Start both with: docker compose up -d
+# Versions are pinned on purpose: whether a store behaves depends on its exact version.
+services:
+  # SeaweedFS: keeps the "only if empty" promise.
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.54     # the warehouse program
+    command: server -s3 -dir=/data      # start it with the Amazon-style door switched on
+    ports:
+      - "127.0.0.1:8333:8333"           # that door, reachable only from this computer
+
+  # Garage: ignores the "only if empty" rule by design, so it is our known-broken example.
+  garage:
+    image: dxflrs/garage:v2.5.0
+    # --single-node: set itself up as a one-machine warehouse
+    # --default-bucket: create the bucket and the key named in "environment" below
+    command: /garage server --single-node --default-bucket
+    environment:
+      # Throwaway login for this local test server only (store.go uses the same values).
+      GARAGE_DEFAULT_ACCESS_KEY: GK00000000000000000000000000000001
+      GARAGE_DEFAULT_SECRET_KEY: "0000000000000000000000000000000000000000000000000000000000000001"
+      GARAGE_DEFAULT_BUCKET: test
+    volumes:
+      - ./garage.toml:/etc/garage.toml  # Garage's settings file
+    ports:
+      - "127.0.0.1:3900:3900"

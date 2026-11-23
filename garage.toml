@@ -1,0 +1,17 @@
+# Settings for the local Garage test server (single machine, data is thrown away on restart).
+
+metadata_dir = "/tmp/meta"   # where Garage keeps its index of files
+data_dir = "/tmp/data"       # where Garage keeps the files themselves
+db_engine = "sqlite"
+replication_factor = 1       # keep one copy of each file: we only have one machine
+
+# Garage machines talk to each other on this port. Unused with one machine, but required.
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+rpc_secret = "0000000000000000000000000000000000000000000000000000000000000001"
+
+# The Amazon-style door that our tool talks to.
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+root_domain = ".s3.garage.localhost"
